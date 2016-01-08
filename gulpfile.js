@@ -112,7 +112,7 @@ gulp.task('sprite:build', function() {
             .pipe(spritesmith({
                 imgName: 'sprite.png',
                 cssName: 'sprite.scss',
-                imgPath: 'img/sprite.png'
+                imgPath: '../img/sprite.png'
             }));
 
     spriteData.img.pipe(gulp.dest(path.build.img)); // путь, куда сохраняем картинку
