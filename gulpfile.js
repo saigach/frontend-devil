@@ -5,6 +5,7 @@ var gulp = require('gulp'),
     prefixer = require('gulp-autoprefixer'),
     uglify = require('gulp-uglify'),
     sass = require('gulp-sass'),
+    spritesmith = require('gulp.spritesmith'),
     sourcemaps = require('gulp-sourcemaps'),
     rigger = require('gulp-rigger'),
     cssmin = require('gulp-minify-css'),
@@ -26,7 +27,9 @@ var path = {
         html: 'src/*.html',
         js: 'src/js/main.js',
         style: 'src/style/main.scss',
+        partials: 'src/style/partials/',
         img: 'src/img/**/*.*',
+        sprite: 'src/sprite/*.png',
         fonts: 'src/fonts/**/*.*'
     },
     watch: {
@@ -34,6 +37,7 @@ var path = {
         js: 'src/js/**/*.js',
         style: 'src/style/**/*.scss',
         img: 'src/img/**/*.*',
+        sprite: 'src/img/sprite/*.png',
         fonts: 'src/fonts/**/*.*'
     },
     clean: './build'
@@ -102,6 +106,19 @@ gulp.task('image:build', function () {
         .pipe(reload({stream: true}));
 });
 
+gulp.task('sprite:build', function() {
+    var spriteData = 
+        gulp.src(path.src.sprite) // путь, откуда берем картинки для спрайта
+            .pipe(spritesmith({
+                imgName: 'sprite.png',
+                cssName: 'sprite.scss',
+                imgPath: 'img/sprite.png'
+            }));
+
+    spriteData.img.pipe(gulp.dest(path.build.img)); // путь, куда сохраняем картинку
+    spriteData.css.pipe(gulp.dest(path.src.partials)); // путь, куда сохраняем стили
+});
+
 gulp.task('fonts:build', function() {
     gulp.src(path.src.fonts)
         .pipe(gulp.dest(path.build.fonts))
@@ -112,7 +129,8 @@ gulp.task('build', [
     'js:build',
     'style:build',
     'fonts:build',
-    'image:build'
+    'image:build',
+    'sprite:build'
 ]);
 
 
@@ -128,6 +146,9 @@ gulp.task('watch', function(){
     });
     watch([path.watch.img], function(event, cb) {
         gulp.start('image:build');
+    });
+    watch([path.watch.img], function(event, cb) {
+        gulp.start('sprite:build');
     });
     watch([path.watch.fonts], function(event, cb) {
         gulp.start('fonts:build');
