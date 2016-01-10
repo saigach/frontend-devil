@@ -13,6 +13,8 @@ var gulp = require('gulp'),
     pngquant = require('imagemin-pngquant'),
     rimraf = require('rimraf'),
     browserSync = require("browser-sync"),
+    jshint = require('gulp-jshint'),
+    stylish = require('jshint-stylish'),
     reload = browserSync.reload;
 
 var path = {
@@ -61,6 +63,12 @@ gulp.task('clean', function (cb) {
     rimraf(path.clean, cb);
 });
 
+gulp.task('jshint', function() {
+  return gulp.src(path.src.js)
+  .pipe(jshint())
+  .pipe(jshint.reporter(stylish));
+});
+
 gulp.task('html:build', function () {
     gulp.src(path.src.html) 
         .pipe(rigger())
@@ -68,7 +76,7 @@ gulp.task('html:build', function () {
         .pipe(reload({stream: true}));
 });
 
-gulp.task('js:build', function () {
+gulp.task('js:build', ['jshint'], function () {
     gulp.src(path.src.js) 
         .pipe(rigger()) 
         .pipe(sourcemaps.init()) 
